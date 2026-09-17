@@ -5,5 +5,7 @@ modules
 firmware
 zephyr
 zmk
-draw/base.yaml
-draw/overview.yaml
+draw/base.*
+draw/overview.*
+draw/layers
+draw/kd-config.yaml
