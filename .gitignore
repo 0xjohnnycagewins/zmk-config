@@ -9,3 +9,8 @@ draw/base.*
 draw/overview.*
 draw/layers
 draw/kd-config.yaml
+/draw/glove80-layers.pdf
+/draw/positions.yaml
+/draw/print
+/draw/raw
+/draw/print.html

@@ -1,5 +1,5 @@
 /*
- * Glove80 keymap — QWERTY base, urob-style "timeless" home row mods.
+ * Glove80 keymap v1.2 — QWERTY base, urob-style "timeless" home row mods.
  * config/glove80.keymap
  *
  * Standalone: does NOT include base.keymap, combos.dtsi, leader.dtsi
@@ -8,64 +8,67 @@
  * ── Glove80 key positions (this is the order bindings appear below) ──
  *
  *  |------------------------|------------------------|
- *  |  0  1  2  3  4         |          5  6  7  8  9 |   F-row
- *  | 10 11 12 13 14 15      |      16 17 18 19 20 21 |   number row
- *  | 22 23 24 25 26 27      |      28 29 30 31 32 33 |   top alpha
- *  | 34 35 36 37 38 39      |      40 41 42 43 44 45 |   home row
- *  | 46 47 48 49 50 51      |      58 59 60 61 62 63 |   bottom alpha
- *  | 64 65 66 67 68         |         75 76 77 78 79 |   outer row
+ *  |  0  1  2  3  4         |          5  6  7  8  9 |   R1  F-row
+ *  | 10 11 12 13 14 15      |      16 17 18 19 20 21 |   R2  number row
+ *  | 22 23 24 25 26 27      |      28 29 30 31 32 33 |   R3  top alpha
+ *  | 34 35 36 37 38 39      |      40 41 42 43 44 45 |   R4  home row
+ *  | 46 47 48 49 50 51      |      58 59 60 61 62 63 |   R5  bottom alpha
+ *  | 64 65 66 67 68         |         75 76 77 78 79 |   R6  outer row
  *  |                69 52   |   57 74                |   thumbs, nearest
  *  |                 70 53  |  56 73                 |   thumbs, middle
  *  |                  71 54 | 55 72                  |   thumbs, furthest
  *  |------------------------|------------------------|
  *
- *  Left-hand finger columns:  34=outer 35=pinky 36=ring 37=middle 38=index 39=inner
- *  Right-hand finger columns: 40=inner 41=index 42=middle 43=ring   44=pinky 45=outer
+ *  Columns, both hands:  C1 inner  C2 index  C3 middle  C4 ring
+ *                        C5 pinky  C6 outer
+ *  Left  hand, left→right on the page:  C6 C5 C4 C3 C2 C1
+ *  Right hand, left→right on the page:  C1 C2 C3 C4 C5 C6
  *
- * ── THUMBS: OUTER ARC ONLY ──
+ * ── REACH BUDGET ──
  *
- *  Everything needed in typing flow is on the OUTER arc, three keys per
- *  hand. This is the standard thumb budget — Miryoku, urob and sunaku all
- *  use three per hand.
+ *  Dead (&none) everywhere:
+ *    R1 except position 2      0 1 3 4, 5-9
+ *    C6 on R2 R3 R5 R6         10 22 46 64, 21 33 63 79
+ *    C5R6                      65, 78
  *
- *     69 Space    70 Nav(mo)   71 Super        (left outer, near→far)
- *     74 Enter    73 Sym(mo)   72 Backspace    (right outer, near→far)
+ *  The whole C6 column is gone except ESC (34) and ' (45).
+ *  Still needing an upper-outer reach: `1` (C5R2) and `Q` (C5R3).
  *
- *  The INNER arc (52-54, 55-57) is DEAD — &none on every layer.
- *  Everything that used to live there moved:
- *     Tab      → base 22 (where the keycap says TAB)
- *     Compose  → Sym layer, outer home key (34)
- *     Mouse    → Nav + G toggles it
- *     Escape   → base 34
- *     Delete   → Nav layer, right outer home (45)
- *     Sticky Shift → base 77 (right hand, bottom row, ring finger)
+ * ── THUMBS ──
  *
- * ── DEAD KEYS ──
+ *  Outer arc, near → far:
+ *     69 Space    70 Nav(mo)   71 Tab
+ *     74 Enter    73 Sym(mo)   72 Backspace
  *
- *  &none everywhere, because they need the palm to move:
- *    R1        the whole F-row              (0-4, 5-9)
- *    C6R2      `=` and `-`                  (10, 21)
- *    C6R3      Tab and `[`                  (22, 33)
- *    inner arc six thumb keys               (52-57)
+ *  Inner arc, near → far — media only, nothing in typing flow:
+ *     52 Vol-     53 Vol+      54 Mute
+ *     57 Play     56 Next      55 Prev
  *
- *  Where they went:
- *    F1-F10    Nav layer, one per digit — hold Nav, press 3, get F3
- *    F11 F12   Nav layer, right pinky bottom row
- *    Tab       LEFT THUMB, furthest key of the outer arc
- *    = - [     Sym layer
+ * ── LAYER GEOMETRY ──
  *
- *  What that leaves needing an upper-outer reach: `1` on C5R2 and `Q`
- *  on C5R3. Two keys, both left pinky. `q` is common in French, but
- *  `qu` is cross-hand in QWERTY so the digraph doesn't compound it.
+ *  Sym held by the RIGHT thumb → payload on the LEFT hand,
+ *                                right home row stays &trans.
+ *  Nav held by the LEFT thumb  → mouse on the LEFT hand, keyboard
+ *                                navigation on the RIGHT hand; the
+ *                                LEFT home row stays &trans.
+ *
+ *  The transparent home row is load-bearing. It is the only reason
+ *  Shift+Arrow, Ctrl+Arrow and Ctrl+Shift+Arrow work: the modifier
+ *  comes from the hand that is holding the layer key. Nav occupies
+ *  R3/R5/R6 on the left, but never R4 — that row must stay free.
+ *
+ *  Sys is a TOGGLE on position 2, up in the otherwise-dead F-row —
+ *  out of accidental reach, and a toggle so both hands are free once
+ *  you're on it. Position 2 or Escape gets you back out.
  *
  * ── PINKY BUDGET ──
  *
- *  The pinky columns (C5, C6) carry only low-frequency keys, except the
- *  alphas QWERTY nails down (Q A Z P ; /):
- *    base   ` ESC ' ] Ctrl Alt, mo SYS
- *    sym    ~ ^ | \ Compose
- *    nav    PrtSc Mute CapsWord F11 F12
- *  Frequent keys live on index, middle and ring, or on a thumb.
+ *  Pinky columns carry only low-frequency keys, apart from the alphas
+ *  QWERTY nails down (Q A Z P ; /):
+ *    base  ESC '
+ *    sym   ~ ^ \ |
+ *    nav   F1 F6 F11 F12, Caps Word
+ *  Everything frequent sits on index, middle, ring, or a thumb.
  */
 
 #include <behaviors.dtsi>
@@ -81,9 +84,7 @@
 #define BASE  0
 #define NAV   1
 #define SYM   2
-#define MOUSE 3
-#define SYS   4
-#define EMOJI 5
+#define SYS   3
 
 /* ──────────────────── positional hold-tap key sets ─────────────────── */
 
@@ -136,154 +137,241 @@ ZMK_HOLD_TAP(hmr,
     hold-trigger-on-release;
 )
 
+/* ────────── layer indicators + per-layer RGB ──────────────────────────
+ *
+ * ZMK does not report layer state to the host — there is no
+ * characteristic to read. So each layer key is a macro that ALSO holds
+ * an otherwise-unused function key, and glove80-layerd watches for it
+ * on /dev/input. F17-F20 are unbound everywhere, so nothing else sees
+ * them.
+ *
+ *   F20 held  → Nav active        F18 tapped → entering Sys
+ *   F19 held  → Sym active        F17 tapped → leaving Sys
+ *
+ * Nav and Sym are momentary, so they're reported by key-down/key-up:
+ * the host cannot get stuck, because a release is a real event.
+ *
+ * Sys is a toggle, so it uses separate enter and leave signals rather
+ * than one key whose meaning alternates. Because &sys_on only exists on
+ * base and &sys_off only exists on the Sys layer, the signal always
+ * reflects the firmware's real state — miss an event and the very next
+ * press puts the host back in sync. There is no parity to drift.
+ *
+ * The RGB colour is set here too, not by a host service: there is no
+ * host→keyboard channel for RGB. Doing it in firmware means no latency
+ * and it keeps working when the daemon isn't running.
+ *
+ * Comment out GLOVE80_RGB_LAYERS to drop the colours and keep the
+ * indicators. Sys + Y (RGB_TOG) is the instant off switch.
+ *
+ * RGB state set at runtime is saved to flash and OVERRIDES every
+ * CONFIG_ZMK_RGB_*_START value, across firmware flashes. So if the
+ * strip is saved as "off", or saved on an animated effect that rewrites
+ * the hue every frame, these colour commands will appear to do nothing.
+ * `glove80-rgb fix` prints the one-time key sequence that sorts it.
+ *
+ * GLOVE80_RGB_FORCE_ON makes every layer change also switch the strip
+ * on, which beats the saved state at the cost of Sys+Y no longer
+ * pausing anything — the next layer change would switch it back on.
+ */
+
+#define GLOVE80_RGB_LAYERS
+// #define GLOVE80_RGB_FORCE_ON
+
+#ifdef GLOVE80_RGB_LAYERS
+#  ifdef GLOVE80_RGB_FORCE_ON
+#    define LRGB(c) &rgb_ug RGB_ON &rgb_ug c
+#  else
+#    define LRGB(c) &rgb_ug c
+#  endif
+#else
+#  define LRGB(c) &none
+#endif
+
+/* Catppuccin Mocha hues at a battery-friendly brightness.
+ * RGB_COLOR_HSB(hue 0-359, saturation 0-100, brightness 0-100) */
+#define RGB_BASE RGB_COLOR_HSB(217, 75, 25)   /* blue   */
+#define RGB_NAV  RGB_COLOR_HSB(115, 75, 25)   /* green  */
+#define RGB_SYM  RGB_COLOR_HSB(267, 75, 25)   /* mauve  */
+#define RGB_SYS  RGB_COLOR_HSB(343, 75, 25)   /* red    */
+
+ZMK_MACRO(nav_layer,
+    wait-ms = <0>;
+    tap-ms = <0>;
+    bindings = <&macro_press &mo NAV &kp F20>
+             , <&macro_tap LRGB(RGB_NAV)>
+             , <&macro_pause_for_release>
+             , <&macro_release &mo NAV &kp F20>
+             , <&macro_tap LRGB(RGB_BASE)>;
+)
+
+ZMK_MACRO(sym_layer,
+    wait-ms = <0>;
+    tap-ms = <0>;
+    bindings = <&macro_press &mo SYM &kp F19>
+             , <&macro_tap LRGB(RGB_SYM)>
+             , <&macro_pause_for_release>
+             , <&macro_release &mo SYM &kp F19>
+             , <&macro_tap LRGB(RGB_BASE)>;
+)
+
+/* Only ever reachable from base. */
+ZMK_MACRO(sys_on,
+    wait-ms = <0>;
+    tap-ms = <0>;
+    bindings = <&macro_tap &kp F18>
+             , <&macro_tap LRGB(RGB_SYS)>
+             , <&macro_tap &tog SYS>;
+)
+
+/* Only ever reachable from the Sys layer. */
+ZMK_MACRO(sys_off,
+    wait-ms = <0>;
+    tap-ms = <0>;
+    bindings = <&macro_tap &kp F17>
+             , <&macro_tap LRGB(RGB_BASE)>
+             , <&macro_tap &tog SYS>;
+)
+
 /* Mouse emulation tuning. Delete both if your ZMK revision rejects them. */
 &mmv { time-to-max-speed-ms = <500>; };
 &msc { time-to-max-speed-ms = <500>; };
-
-/* ─────────────────────── emoji via Compose ─────────────────────────
- *
- * Each macro types: Compose, e, e, <letter>.
- * The sequences are defined in ~/.XCompose — see the docs note.
- * The "ee" prefix is a private namespace that doesn't collide with
- * standard Compose sequences.
- */
-
-#define EMO(name, key) ZMK_MACRO(name, bindings = <&kp K_APP &kp E &kp E &kp key>;)
-
-EMO(em_joy,    J)   /* joy        */
-EMO(em_smile,  S)   /* slight smile */
-EMO(em_up,     T)   /* thumbs up  */
-EMO(em_down,   D)   /* thumbs down */
-EMO(em_heart,  H)   /* heart      */
-EMO(em_fire,   F)   /* fire       */
-EMO(em_eyes,   O)   /* eyes       */
-EMO(em_check,  C)   /* check mark */
-EMO(em_cross,  X)   /* cross mark */
-EMO(em_party,  P)   /* party      */
-EMO(em_rocket, R)   /* rocket     */
-EMO(em_think,  B)   /* thinking   */
-EMO(em_cry,    W)   /* sobbing    */
-EMO(em_pray,   M)   /* folded hands */
 
 /* ────────────────────────────── layers ────────────────────────────── */
 
 /* BASE — QWERTY, GACS home row mods pinky→index.
  *
- * Dead: R1 (F-row), C6R2 and C6R3 both hands, and the inner thumb arc.
- * Everything remaining is reachable without moving the palm.
- *
- * Tab is on the left thumb. Escape is on the index finger, bottom row
- * (and still on its own keycap). Super is on the middle finger, bottom
- * row — plus the right pinky home row mod for cross-hand shortcuts. */
+ * Escape on the index finger, bottom row (and on its own keycap).
+ * Super on the middle finger, bottom row — plus the right pinky home
+ * row mod, which is the comfortable one for left-hand niri binds.
+ * = and - on the bottom row, so common operators need no layer. */
 ZMK_LAYER(base,
-//  R1 — dead
-    &mo SYS    &none    &none    &none    &none                         &none    &none    &none    &none    &none
-// 10        11       12       13       14       15                   16       17       18       19       20       21
-   &none     &kp N1   &kp N2   &kp N3   &kp N4   &kp N5               &kp N6   &kp N7   &kp N8   &kp N9   &kp N0   &none
-// 22        23       24       25       26       27                   28       29       30       31       32       33
-   &none     &kp Q    &kp W    &kp E    &kp R    &kp T                &kp Y    &kp U    &kp I    &kp O    &kp P    &none
-// 34        35       36       37       38       39                   40       41       42       43       44       45
-   &kp ESC   &hml LGUI A &hml LALT S &hml LCTRL D &hml LSHFT F &kp G  &kp H  &hmr RSHFT J &hmr RCTRL K &hmr RALT L &hmr RGUI SEMI &kp SQT
-// 46        47       48       49       50       51
-   &kp GRAVE &kp Z    &kp X    &kp C    &kp V    &kp B
-// 52-54                       55-57
-   &none     &none    &none          &none    &none    &none
-//                                                                   58       59       60       61       62       63
-                                                                     &kp N    &kp M    &kp COMMA &kp DOT &kp FSLH &kp BSLH
-// 64 C6        65 C5    66 C4    67 C3     68 C2
-   &none        &none    &kp LALT &kp LCTRL &kp LGUI
-// 69           70       71             72       73       74
-   &kp SPACE    &mo NAV  &kp TAB        &kp BSPC &mo SYM  &kp RET
-//                                                                   75 C2    76 C3    77 C4    78 C5    79 C6
-                                                                     &sk LSHFT &kp K_APP &mo EMOJI &none &none
+//  R1 — dead except position 2, which toggles Sys
+    &none      &none    &sys_on  &none    &none                        &none    &none    &none    &none    &none
+// 10 dead    11       12       13       14       15                   16       17       18       19       20       21 dead
+   &none      &kp N1   &kp N2   &kp N3   &kp N4   &kp N5               &kp N6   &kp N7   &kp N8   &kp N9   &kp N0   &none
+// 22 dead    23       24       25       26       27                   28       29       30       31       32       33 dead
+   &none      &kp Q    &kp W    &kp E    &kp R    &kp T                &kp Y    &kp U    &kp I    &kp O    &kp P    &none
+// 34         35       36       37       38       39                   40       41       42       43       44       45
+   &kp ESC    &hml LGUI A &hml LALT S &hml LCTRL D &hml LSHFT F &kp G  &kp H  &hmr RSHFT J &hmr RCTRL K &hmr RALT L &hmr RGUI SEMI &kp SQT
+// 46 dead    47       48       49       50       51
+   &none      &kp Z    &kp X    &kp C    &kp V    &kp B
+// 52          53           54             55         56         57      (inner arc: media only)
+   &kp C_VOL_DN &kp C_VOL_UP &kp C_MUTE    &kp C_PREV &kp C_NEXT &kp C_PP
+//                                                                   58       59       60       61       62       63 dead
+                                                                     &kp N    &kp M    &kp COMMA &kp DOT &kp FSLH &none
+// 64 dead    65 dead  66 C4    67 C3     68 C2
+   &none      &none    &kp LALT &kp LCTRL &kp LGUI
+// 69         70       71                72       73       74
+   &kp SPACE  &nav_layer &kp TAB         &kp BSPC &sym_layer &kp RET
+//                                                                   75 C2     76 C3     77 C4     78 dead  79 dead
+                                                                     &sk LSHFT &kp EQUAL &kp MINUS &none    &none
 )
 
-/* NAV — hold the middle key of the left thumb arc.
+/* NAV — hold the middle key of the LEFT thumb arc.
  *
- * Number row → F1-F10, one per digit. F11/F12 on the right pinky,
- * bottom row, since they're rare.
- * Media on the left, arrows on HJKL, edit cluster on Z X C V. */
+ * LEFT hand drives the mouse, RIGHT hand does keyboard navigation.
+ * The left home row (R4) stays transparent, so Shift / Ctrl / Alt /
+ * Super are all live while either hand works.
+ *
+ *   left  R3  Caps Word, then scroll   ← ↓ ↑ →
+ *   left  R5  pointer                  ← ↓ ↑ →
+ *   left  R6  sticky Ctrl, left click, right click
+ *   right R3  Home, PgDn, PgUp, End — column-aligned above the arrows
+ *   right R4  arrows ← ↓ ↑ → on H J K L, the same keys as niri's
+ *             window navigation, so one motor pattern covers both
+ *
+ * ONE DIRECTION RULE, BOTH HANDS: the four keys read ← ↓ ↑ → from
+ * left to right across the page. Scroll, pointer and arrows all use
+ * it, so "further left" always means "further left" — no per-hand
+ * exception to hold in your head while watching a cursor move.
+ *
+ * MODIFIED CLICKS. Clicks and the home row mods are now on the same
+ * hand, and the positional hold-tap resolves a same-hand mod as a tap.
+ * Two ways through:
+ *   Ctrl+click  tap sticky Ctrl (ring, R6), then click. Needed because
+ *               Ctrl lives on D — the same finger as left click.
+ *   Shift+click hold F past 280ms, then click with the middle finger.
+ *               Different fingers, so urob's same-hand escape valve
+ *               works. Sticky Shift is also on the right hand at 75.
+ */
 ZMK_LAYER(nav,
-    &trans   &trans   &trans   &trans   &trans                        &trans   &trans   &trans   &trans   &trans
-    &trans   &kp F1   &kp F2   &kp F3   &kp F4   &kp F5               &kp F6   &kp F7   &kp F8   &kp F9   &kp F10  &trans
-    &trans   &caps_word   &kp C_PREV &kp C_PP &kp C_NEXT &trans          &kp HOME &kp PG_DN &kp PG_UP &kp END &kp F11  &kp F12
-    &trans   &trans   &kp C_MUTE &kp C_VOL_DN &kp C_VOL_UP   &trans         &kp LEFT &kp DOWN &kp UP   &kp RIGHT &trans   &trans
-    &trans &kp LC(Z) &kp LC(X) &kp LC(C) &kp LC(V) &tog MOUSE
-    &trans   &trans   &trans        &trans    &trans   &trans
-                                                                      &kp LC(LEFT) &kp LC(RIGHT) &kp LC(HOME) &kp LC(END) &trans &trans
-    &trans   &trans   &trans   &trans   &trans
-    &trans   &trans   &trans        &kp DEL    &trans   &trans
-                                                                      &trans   &trans   &trans   &trans   &trans
+    &trans     &trans   &trans   &trans   &trans                      &trans   &trans   &trans   &trans   &trans
+    &trans     &kp F1   &kp F2   &kp F3   &kp F4   &kp F5             &kp F6   &kp F7   &kp F8   &kp F9   &kp F10  &trans
+//             CapsWord  scroll ←         ↓              ↑              →                 Home     PgDn      PgUp      End     F11
+    &trans     &caps_word &msc SCRL_LEFT  &msc SCRL_DOWN &msc SCRL_UP   &msc SCRL_RIGHT   &kp HOME &kp PG_DN &kp PG_UP &kp END &kp F11 &trans
+//  left home row transparent — Shift / Ctrl / Alt / Gui live here      ←        ↓        ↑        →
+    &trans     &trans   &trans   &trans   &trans   &trans             &kp LEFT &kp DOWN &kp UP   &kp RIGHT &trans  &trans
+//                      pointer ←        ↓                ↑              →
+    &trans     &trans   &mmv MOVE_LEFT   &mmv MOVE_DOWN   &mmv MOVE_UP   &mmv MOVE_RIGHT
+    &trans     &trans   &trans           &trans   &trans   &trans
+//                                                                                               F12
+                                                                     &trans &trans &trans &trans &kp F12 &trans
+//                      stickyCtrl  LCLK        RCLK
+    &trans     &trans   &sk LCTRL   &mkp LCLK   &mkp RCLK
+    &trans     &trans   &trans           &kp DEL  &trans   &trans
+                                                                     &trans   &trans &trans &trans  &trans
 )
 
-/* SYM — hold the middle key of the right thumb arc.
+/* SYM — hold the middle key of the RIGHT thumb arc.
  *
- * The number row stays transparent, so digits still work while held —
- * which means !@#$% are just Shift+digit and don't need a slot here.
- * That frees the whole layer for the symbols that actually earn a key.
+ * Payload on the left hand, right home row transparent.
  *
- * Bracket pairs stack on ring/middle:  { }  above  ( )  above  [ ]
- * Minus above equals on the index.     +  _  on the inner column.
- * The pinky gets only ~ ^ | \ and Compose — all rare. */
+ * Bracket pairs stack on ring/middle, reading left to right:
+ *     {  }  above  (  )  above  [  ]
+ * The inner column runs +  _  &  ; the index column " ` * .
+ *
+ * Every French accent is reachable WITHOUT Shift, which is why the
+ * backtick, caret and double quote all have unshifted keys here:
+ *     Compose ' e → é    (apostrophe is on base)
+ *     Compose ` e → è    (backtick, left index home)
+ *     Compose ^ e → ê    (caret, left pinky home)
+ *     Compose " e → ë    (double quote, left index upper)
+ *     Compose , c → ç    (comma is on base)
+ *
+ * Compose itself is on the LEFT thumb, furthest key — it cannot go on
+ * the right thumb, because that thumb is holding this layer.
+ *
+ * The number row stays transparent, so digits work while held and
+ * ! @ # $ % need no slot. = and - live on the base bottom row. */
 ZMK_LAYER(sym,
-    &trans    &trans    &trans   &trans   &trans                        &trans   &trans   &trans   &trans   &trans
-    &trans    &trans    &trans   &trans   &trans   &trans               &trans   &trans   &trans   &trans   &trans   &trans
-    &trans    &trans    &kp LBRC &kp RBRC &kp MINUS &kp PLUS            &trans   &trans   &trans   &trans   &trans   &trans
-    &kp CARET &kp TILDE &kp LPAR &kp RPAR &kp EQUAL &kp UNDER           &trans   &trans   &trans   &trans   &trans   &trans
-    &kp BSLH  &kp PIPE  &kp LBKT &kp RBKT &kp STAR &kp AMPS
-    &trans    &trans    &trans        &trans    &trans   &trans
-                                                                        &trans   &trans   &trans   &trans   &trans   &trans
-    &trans    &trans    &trans   &trans   &trans
-    &trans    &trans    &trans        &trans    &trans   &trans
-                                                                        &trans   &trans   &trans   &trans   &trans
-)
-
-/* MOUSE — Nav + G toggles it. G again, or the backtick key, exits.
- * Right hand points on HJKL, scroll above. Buttons on the left hand so
- * you can click and drag while the right hand is on the trackpad. */
-ZMK_LAYER(mouse,
-    &trans   &trans   &trans    &trans      &trans                        &trans   &trans   &trans   &trans   &trans
-    &trans   &trans   &trans    &trans      &trans      &trans               &trans   &trans   &trans   &trans   &trans   &trans
-    &trans   &trans   &trans    &trans      &trans      &trans               &msc SCRL_LEFT &msc SCRL_DOWN &msc SCRL_UP &msc SCRL_RIGHT &trans &trans
-    &trans   &trans   &trans    &trans      &trans      &tog BASE            &mmv MOVE_LEFT &mmv MOVE_DOWN &mmv MOVE_UP &mmv MOVE_RIGHT &trans &trans
-    &trans   &trans   &mkp MCLK &mkp RCLK   &mkp LCLK   &tog MOUSE
-    &trans   &trans   &trans    &trans      &trans      &trans
-                                                                      &trans   &trans   &trans   &trans   &trans   &trans
-    &trans   &trans   &trans   &trans       &trans
-    &trans   &trans   &trans   &trans       &trans      &trans
-                                                                      &trans   &trans   &trans   &trans   &trans
-)
-
-/* SYS — hold the bottom-left corner key.
- * &bootloader and &sys_reset only affect the half their key lives on. */
-ZMK_LAYER(sys,
-    &trans   &trans   &trans   &trans   &trans                        &trans   &trans   &trans   &trans   &trans
-    &trans   &bt BT_SEL 0 &bt BT_SEL 1 &bt BT_SEL 2 &bt BT_SEL 3 &bt BT_SEL 4  &trans &trans &trans &trans &trans &trans
-    &trans   &rgb_ug RGB_TOG &rgb_ug RGB_BRD &rgb_ug RGB_BRI &rgb_ug RGB_HUD &rgb_ug RGB_HUI  &trans &trans &trans &trans &trans &trans
-    &trans   &out OUT_USB &out OUT_BLE &trans &trans &trans          &trans   &trans   &trans   &trans   &trans   &trans
-    &bt BT_CLR &bootloader &sys_reset &rgb_ug RGB_EFF &rgb_ug RGB_SAD &rgb_ug RGB_SAI
-    &trans   &trans   &trans        &trans    &trans   &trans
-                                                                      &trans   &bootloader &sys_reset &trans &trans &trans
-    &trans   &trans   &trans   &trans   &trans
-    &trans   &trans   &trans        &trans    &trans   &trans
-                                                                      &trans   &trans   &trans   &trans   &trans
-)
-
-/* EMOJI — Nav + B toggles it. Escape or the backtick key exits.
- *
- * Every emoji sits on its own initial: J joy, H heart, F fire, S smile,
- * D thumbs-down, T thumbs-up, C check, X cross, R rocket, W weeping,
- * O eyes, P party, B thinking, M merci.
- * G opens the searchable picker (sends Mod+E → rofimoji). */
-ZMK_LAYER(emoji,
     &trans   &trans   &trans   &trans   &trans                        &trans   &trans   &trans   &trans   &trans
     &trans   &trans   &trans   &trans   &trans   &trans               &trans   &trans   &trans   &trans   &trans   &trans
-    &trans   &trans   &em_cry  &trans   &em_rocket &em_up             &trans   &trans   &trans   &em_eyes &em_party &trans
-    &trans   &trans   &em_smile &em_down &em_fire &kp LG(E)           &em_heart &em_joy &trans   &trans   &trans   &trans
-    &trans   &trans   &em_cross &em_check &trans  &em_think
-    &trans   &trans   &trans        &trans    &trans   &trans
-                                                                      &trans   &em_pray &trans  &trans   &trans   &trans
+//           \        {        }        "        +
+    &trans   &kp BSLH &kp LBRC &kp RBRC &kp DQT  &kp PLUS             &trans   &trans   &trans   &trans   &trans   &trans
+//  ~        ^        (        )        `        _
+    &kp TILDE &kp CARET &kp LPAR &kp RPAR &kp GRAVE &kp UNDER         &trans   &trans   &trans   &trans   &trans   &trans
+//           |        [        ]        *        &
+    &trans   &kp PIPE &kp LBKT &kp RBKT &kp STAR &kp AMPS
+    &trans   &trans   &trans           &trans   &trans   &trans
+                                                                     &trans   &trans   &trans   &trans   &trans   &trans
     &trans   &trans   &trans   &trans   &trans
-    &trans   &trans   &trans        &trans    &trans   &trans
-                                                                      &trans   &trans   &trans   &trans   &trans
+//                    Compose
+    &trans   &trans   &kp K_APP        &trans   &trans   &trans
+                                                                     &trans   &trans   &trans   &trans   &trans
+)
+
+/* SYS — TOGGLE on position 2 (R1C4). Press it again, or Escape, to leave.
+ *
+ * A toggle rather than a hold, because position 2 is up in the dead
+ * F-row: awkward to hold, impossible to hit by accident. Toggled on,
+ * both hands are free, so the left half's bootloader and reset keys
+ * are properly reachable — they have to live on the left half, since
+ * &bootloader and &sys_reset only affect their own side. */
+ZMK_LAYER(sys,
+    &trans   &trans   &sys_off &trans   &trans                        &trans   &trans   &trans   &trans   &trans
+//                                                                    bluetooth profiles 0-4
+    &trans   &trans   &trans   &trans   &trans   &trans               &bt BT_SEL 0 &bt BT_SEL 1 &bt BT_SEL 2 &bt BT_SEL 3 &bt BT_SEL 4 &trans
+//                                                                    RGB on/off, dimmer, brighter, hue-, hue+
+    &trans   &trans   &trans   &trans   &trans   &trans               &rgb_ug RGB_TOG &rgb_ug RGB_BRD &rgb_ug RGB_BRI &rgb_ug RGB_HUD &rgb_ug RGB_HUI &trans
+//  exit                                                              BT clear, out USB, out BLE, effect, sat-, sat+
+    &sys_off &trans   &trans   &trans   &trans   &trans               &bt BT_CLR &out OUT_USB &out OUT_BLE &rgb_ug RGB_EFF &rgb_ug RGB_SAD &rgb_ug RGB_SAI
+//                             boot(L)  reset(L)
+    &trans   &trans   &trans   &bootloader &sys_reset &trans
+    &trans   &trans   &trans           &trans   &trans   &trans
+//                                                                             boot(R)  reset(R)
+                                                                     &trans   &bootloader &sys_reset &trans &trans &trans
+    &trans   &trans   &trans   &trans   &trans
+    &trans   &trans   &trans           &trans   &trans   &trans
+                                                                     &trans   &trans   &trans   &trans   &trans
 )

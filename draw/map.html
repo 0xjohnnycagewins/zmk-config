@@ -27,7 +27,7 @@
 
   header {
     display: flex; align-items: center; gap: 12px;
-    padding: 10px 16px; border-bottom: 1px solid #2b3040;
+    padding: 10px 16px; border-bottom: 1px solid #313244;
     flex: 0 0 auto;
   }
   #name { font-size: 15px; font-weight: 600; letter-spacing: .02em; }
@@ -39,7 +39,18 @@
     border: 1px solid transparent; white-space: nowrap;
   }
   .tab:hover { color: var(--fg); }
-  .tab.on { background: var(--accent); color: #101319; font-weight: 600; }
+  .tab.on { background: var(--accent); color: #11111b; font-weight: 600; }
+  /* live keyboard layer — outline, so it can coexist with the selection */
+  .tab.live { box-shadow: 0 0 0 2px #a6e3a1, 0 0 10px rgba(166,227,161,.35); }
+  .tab.live.on { box-shadow: 0 0 0 2px #a6e3a1; }
+  #live {
+    font-size: 11px; color: var(--dim); display: flex; align-items: center; gap: 5px;
+  }
+  #dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: #6c7086; transition: background .15s;
+  }
+  #dot.up { background: #a6e3a1; }
 
   main {
     flex: 1 1 auto; display: grid; place-items: center;
@@ -47,17 +58,17 @@
   }
   /* keymap-drawer SVGs are light-themed; give them a plate to sit on */
   #stage {
-    background: #fff; border-radius: 10px; padding: 10px;
+    background: var(--plate); border-radius: 10px; padding: 10px;
     max-width: 100%; max-height: 100%; display: grid; place-items: center;
   }
   #svg { max-width: 100%; max-height: 100%; display: block; }
 
   footer {
-    flex: 0 0 auto; padding: 7px 16px; border-top: 1px solid #2b3040;
+    flex: 0 0 auto; padding: 7px 16px; border-top: 1px solid #313244;
     color: var(--dim); font-size: 12px; display: flex; gap: 18px;
   }
   kbd {
-    background: var(--chip); border: 1px solid #333a4a; border-radius: 4px;
+    background: var(--chip); border: 1px solid #45475a; border-radius: 4px;
     padding: 1px 6px; font: inherit; font-size: 11px; color: var(--fg);
   }
   #err { color: #f28b82; padding: 20px; text-align: center; }
@@ -67,6 +78,7 @@
   <header>
     <span id="name">—</span>
     <span id="pos"></span>
+    <span id="live"><span id="dot"></span><span id="livetext">no daemon</span></span>
     <nav id="tabs"></nav>
   </header>
 
@@ -75,8 +87,10 @@
   <footer>
     <span><kbd>h</kbd> <kbd>l</kbd> / <kbd>←</kbd> <kbd>→</kbd> switch layer</span>
     <span><kbd>1</kbd>–<kbd>9</kbd> jump</span>
-    <span><kbd>g</kbd> first · <kbd>G</kbd> last</span>
+    <span><kbd>n</kbd> key numbers</span>
     <span><kbd>+</kbd> <kbd>-</kbd> zoom</span>
+    <span><kbd>q</kbd> <kbd>esc</kbd> close</span>
+    <span><kbd>f</kbd> follow keyboard</span>
   </footer>
 
 <script src="layers/layers.js"></script>
@@ -94,22 +108,77 @@
     return;
   }
 
-  let i = 0, zoom = 1;
+  let i = 0, zoom = 1, numbers = false;
+  let follow = true, liveLayer = null;
+
+  const PORT = new URLSearchParams(location.search).get("port") || "41407";
+  const API = "http://127.0.0.1:" + PORT;
+  const dot = document.getElementById("dot");
+  const livetext = document.getElementById("livetext");
 
   layers.forEach((l, n) => {
     const b = document.createElement("span");
     b.className = "tab";
     b.textContent = (n + 1) + " " + l;
-    b.onclick = () => show(n);
+    b.onclick = () => { follow = false; show(n); if (liveLayer) onLayer({name: liveLayer}); };
     tabs.appendChild(b);
   });
 
+  function render() {
+    const suffix = numbers ? "-num" : "";
+    img.src = "layers/" + layers[i] + suffix + ".svg?" + Date.now();
+    name.textContent = layers[i];
+    pos.textContent = (i + 1) + " / " + layers.length +
+                      (numbers ? "  ·  key numbers" : "");
+    [...tabs.children].forEach((t, n2) => t.classList.toggle("on", n2 === i));
+    markLive();
+  }
+
+  function markLive() {
+    [...tabs.children].forEach((t, n2) =>
+      t.classList.toggle("live", layers[n2] === liveLayer));
+  }
+
+  function onLayer(payload) {
+    liveLayer = payload && payload.name;
+    dot.classList.add("up");
+    livetext.textContent = liveLayer + (follow ? "" : " (not following)");
+    const n = layers.indexOf(liveLayer);
+    if (follow && n >= 0 && n !== i) show(n);
+    else markLive();
+  }
+
+  function connect() {
+    let src;
+    try {
+      src = new EventSource(API + "/events");
+    } catch (e) {
+      return;
+    }
+    src.onmessage = e => {
+      try { onLayer(JSON.parse(e.data)); } catch (err) {}
+    };
+    src.onerror = () => {
+      dot.classList.remove("up");
+      livetext.textContent = "no daemon";
+      liveLayer = null;
+      markLive();
+      src.close();
+      // The daemon may simply not be running yet; keep trying quietly.
+      setTimeout(connect, 3000);
+    };
+  }
+
   function show(n) {
     i = (n + layers.length) % layers.length;
-    img.src = "layers/" + layers[i] + ".svg?" + Date.now();
-    name.textContent = layers[i];
-    pos.textContent = (i + 1) + " / " + layers.length;
-    [...tabs.children].forEach((t, n2) => t.classList.toggle("on", n2 === i));
+    render();
+  }
+
+  function quit() {
+    window.close();
+    // Chromium app windows normally allow this; if it's blocked,
+    // Mod+/ toggles the window off and Mod+Q closes it in niri.
+    setTimeout(() => { try { window.open("", "_self").close(); } catch (e) {} }, 50);
   }
 
   function setZoom(z) {
@@ -121,6 +190,9 @@
     const k = e.key;
     if (k === "l" || k === "ArrowRight" || k === "j" || k === " ") { show(i + 1); e.preventDefault(); }
     else if (k === "h" || k === "ArrowLeft" || k === "k")          { show(i - 1); e.preventDefault(); }
+    else if (k === "n")                    { numbers = !numbers; render(); }
+    else if (k === "f")                    { follow = !follow; if (liveLayer) onLayer({name: liveLayer}); }
+    else if (k === "q" || k === "Escape")  { quit(); e.preventDefault(); }
     else if (k === "g")                                            { show(0); }
     else if (k === "G")                                            { show(layers.length - 1); }
     else if (k === "+" || k === "=")                               { setZoom(zoom + 0.15); }
@@ -130,6 +202,13 @@
   });
 
   show(0);
+
+  // Open on whatever layer the keyboard is actually on, then follow it.
+  fetch(API + "/layer")
+    .then(r => r.json())
+    .then(onLayer)
+    .catch(() => {})
+    .finally(connect);
 })();
 </script>
 </body>
